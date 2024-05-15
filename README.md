@@ -2,9 +2,10 @@
 - Image App
 - A little content of App Description
 
-# Background Basic-Programming
+# Background Power Slither
 - Why I Made This App
 - And What This App For
+  
 # App Description
 - Library used
 - What Version Of Application is Run
@@ -23,7 +24,6 @@ What new knowledge i learn and Important knowledge to remember
 - The Flow of the application
 - How the code of the application work
 
-# Contact Me
-- Instagram :
+# Contact Us
 - Email :
 - 
