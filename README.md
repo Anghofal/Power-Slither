@@ -11,7 +11,7 @@
 - What Version Of Application is Run
 
 # What I Learn
-What new knowledge i learn and Important knowledge to remember
+- What new knowledge i learn and Important knowledge to remember
 
 # Reference
 - Where i learn the app or the knowledge
