@@ -3,7 +3,8 @@
 - A little content of App Description
 
 # Background Power Slither
-- Why I Made This App
+- Why We Made This App  
+  This app is made because of 
 - And What This App For
   
 # App Description
