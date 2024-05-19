@@ -26,6 +26,9 @@
 # Visual Studio cache directory
 .vs/
 
+# Ignore JetBrains Rider temp files
+*.sln.iml
+
 # Gradle cache directory
 .gradle/
 
