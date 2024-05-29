@@ -1,0 +1,34 @@
+{
+    "name": "Snake",
+    "maps": [
+        {
+            "name": "Snake",
+            "id": "d700ca41-95d5-4ed7-ad90-31d5366bd8a0",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "d151e440-a403-4cc1-aeb6-48a574ead943",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "20666227-ab25-4bb5-92fb-2d78e20cc983",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
