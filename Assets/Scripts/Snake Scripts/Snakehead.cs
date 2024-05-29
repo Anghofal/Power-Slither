@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Snakehead : MonoBehaviour
 {
-    [SerializeField] private Snakehead snakehead;
+    
     [SerializeField] private GameInput gameInput;
     [SerializeField] private float snakeMovSpeed;
     [SerializeField] private float snakeRotationSensivity;
