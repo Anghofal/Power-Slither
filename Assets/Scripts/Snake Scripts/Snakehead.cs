@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TreeEditor;
 using UnityEngine;
 
 public class Snakehead : MonoBehaviour
@@ -16,6 +15,11 @@ public class Snakehead : MonoBehaviour
     [SerializeField] private GameObject snakeBodyPrefab;
     private List<SnakeBody> listBodyParts = new List<SnakeBody>();
     [SerializeField] private float bodyFollowDistance;
+
+    // Var for eating
+    [SerializeField] private float foodSpawnTime;
+    [SerializeField] private GameObject foodPrefabs;
+    private List<Apple> listApples = new List<Apple>();
 
     private void Awake()
     {
@@ -37,22 +41,30 @@ public class Snakehead : MonoBehaviour
         {
             AddBodyParts();
         }
+
+        StartCoroutine("SpawnFood");
     }
     
     private void BodyMovement()
     {
         for (int i = 0; i < listBodyParts.Count; i++)
         {
+            // this is movement script for the second and more body
             if (i != 0)
             {
+                // Move the second body location into first body location but with lerp 
                 listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
                     listBodyParts[i - 1].transform.position, bodyFollowDistance);
+                // Turn rotation of Z Axis (green Axis) the second body like the first body  
                 listBodyParts[i].transform.up = listBodyParts[i].transform.position - listBodyParts[i - 1].transform.position;
             }
+            // this is movement script for the first body
             else
             {
+                // Move the first body location into head location but with lerp 
                 listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
                     transform.position, bodyFollowDistance);
+                // Turn rotation of Z Axis (green Axis) the second body like the first body 
                 listBodyParts[i].transform.up = listBodyParts[i].transform.position - transform.position;
             }
         }
@@ -92,7 +104,7 @@ public class Snakehead : MonoBehaviour
         // If there is something on List listBodyParts 
         if (listBodyParts.Count != 0)
         {
-            // Spawn snakeBodyPrefab into body(snakeBodyPrefab) location that already spawned before
+            // Spawn snakeBodyPrefab into body(snakeBodyPrefab) location that spawned before this body
             GameObject snakeBodySpawn = Instantiate(snakeBodyPrefab,
                 listBodyParts[listBodyParts.Count - 1].transform.position,
                 listBodyParts[listBodyParts.Count - 1].transform.rotation);
@@ -100,19 +112,34 @@ public class Snakehead : MonoBehaviour
             // Make sure the earliest sprite(body) spawn layer is behind the old ones
             snakeBodySpawn.GetComponentInChildren<SpriteRenderer>().sortingOrder = (0 - 1 - listBodyParts.Count);
 
-            // Add 
+            // Add the body reference to List
             listBodyParts.Add(snakeBodySpawn.GetComponent<SnakeBody>());
 
         }
         else
         {
+            // Spawn snakeBodyPrefab into head game object location
             GameObject snakeBodySpawn = Instantiate(snakeBodyPrefab,
                 transform.position,
                 transform.rotation);
             snakeBodySpawn.transform.localScale = transform.localScale;
+            // Make sure the earliest sprite(body) spawn layer is behind the head
             snakeBodySpawn.GetComponentInChildren<SpriteRenderer>().sortingOrder = (0 - 1 - listBodyParts.Count);
 
+            // Add the body reference to List
             listBodyParts.Add(snakeBodySpawn.GetComponent<SnakeBody>());
         }
+    }
+
+    private IEnumerator SpawnFood()
+    {
+        yield return new WaitForSeconds(foodSpawnTime);
+        
+        Vector2 RandomPos = new Vector2(UnityEngine.Random.Range(transform.position.x - 20, transform.position.x + 20), UnityEngine.Random.Range(transform.position.y - 20, transform.position.y + 20));
+
+        GameObject appleFood = Instantiate(foodPrefabs, RandomPos, Quaternion.identity);
+        
+
+        StopCoroutine("SpawnFood");
     }
 }

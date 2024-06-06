@@ -628,6 +628,8 @@ MonoBehaviour:
   snakeRotationSensivity: 5
   snakeBodyPrefab: {fileID: 7143956652831342786, guid: be8ca739dd1aa3b4a8b079d224b622d2, type: 3}
   bodyFollowDistance: 0.01
+  foodSpawnTime: 0.5
+  foodPrefabs: {fileID: 1517420101049355630, guid: 6c495f0b745c1d442a122f6172e44717, type: 3}
 --- !u!1 &1294729486
 GameObject:
   m_ObjectHideFlags: 0
