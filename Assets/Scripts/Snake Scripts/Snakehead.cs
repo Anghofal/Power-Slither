@@ -43,6 +43,7 @@ public class Snakehead : MonoBehaviour
         }
 
         StartCoroutine("SpawnFood");
+        
     }
     
     private void BodyMovement()
@@ -135,11 +136,21 @@ public class Snakehead : MonoBehaviour
     {
         yield return new WaitForSeconds(foodSpawnTime);
         
-        Vector2 RandomPos = new Vector2(UnityEngine.Random.Range(transform.position.x - 20, transform.position.x + 20), UnityEngine.Random.Range(transform.position.y - 20, transform.position.y + 20));
+        Vector2 RandomPos = new Vector2(UnityEngine.Random.Range(transform.position.x - 8, transform.position.x + 8), UnityEngine.Random.Range(transform.position.y - 8, transform.position.y + 8));
 
         GameObject appleFood = Instantiate(foodPrefabs, RandomPos, Quaternion.identity);
         
 
         StopCoroutine("SpawnFood");
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        Apple applePrefabs = col.gameObject.GetComponent<Apple>();
+        if (applePrefabs != null)
+        {
+            Destroy(col.gameObject);
+            AddBodyParts();
+        }
     }
 }

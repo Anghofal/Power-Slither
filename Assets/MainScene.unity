@@ -588,6 +588,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1234236939}
   - component: {fileID: 1234236940}
+  - component: {fileID: 1234236942}
+  - component: {fileID: 1234236941}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -604,7 +606,7 @@ Transform:
   m_GameObject: {fileID: 1234236938}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8843076, y: 0.9743575, z: -2.2773151}
+  m_LocalPosition: {x: 1.8843076, y: 0.9743575, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -627,9 +629,71 @@ MonoBehaviour:
   snakeMovSpeed: 2
   snakeRotationSensivity: 5
   snakeBodyPrefab: {fileID: 7143956652831342786, guid: be8ca739dd1aa3b4a8b079d224b622d2, type: 3}
-  bodyFollowDistance: 0.01
-  foodSpawnTime: 0.5
+  bodyFollowDistance: 0.1
+  foodSpawnTime: 1
   foodPrefabs: {fileID: 1517420101049355630, guid: 6c495f0b745c1d442a122f6172e44717, type: 3}
+--- !u!58 &1234236941
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234236938}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.65
+--- !u!50 &1234236942
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234236938}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &1294729486
 GameObject:
   m_ObjectHideFlags: 0
