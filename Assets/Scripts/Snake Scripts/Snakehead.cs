@@ -11,6 +11,8 @@ public class Snakehead : MonoBehaviour
     [SerializeField] private float snakeRotationSensivity;
     private Vector3 snakeLastMoveDir = new Vector3(0,1,0);
 
+    private bool isSnakeMoving =  true;
+
     // var for body movement
     [SerializeField] private GameObject snakeBodyPrefab;
     private List<SnakeBody> listBodyParts = new List<SnakeBody>();
@@ -20,6 +22,10 @@ public class Snakehead : MonoBehaviour
     [SerializeField] private float foodSpawnTime;
     [SerializeField] private GameObject foodPrefabs;
     private List<Apple> listApples = new List<Apple>();
+
+    // Var for body collision
+    [SerializeField] private int headNumberIdentifier = 0;
+    [SerializeField] private Snakehead snakehead;
 
     private void Awake()
     {
@@ -35,8 +41,15 @@ public class Snakehead : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        HeadMovement();
-        BodyMovement();
+        
+        if (isSnakeMoving)
+        {
+            HeadMovement();
+        }
+        HandleInteractions();
+
+        //BodyMovement();
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             AddBodyParts();
@@ -55,7 +68,7 @@ public class Snakehead : MonoBehaviour
             {
                 // Move the second body location into first body location but with lerp 
                 listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
-                    listBodyParts[i - 1].transform.position, bodyFollowDistance);
+                    listBodyParts[i - 1].transform.position, bodyFollowDistance * Time.deltaTime);
                 // Turn rotation of Z Axis (green Axis) the second body like the first body  
                 listBodyParts[i].transform.up = listBodyParts[i].transform.position - listBodyParts[i - 1].transform.position;
             }
@@ -64,7 +77,7 @@ public class Snakehead : MonoBehaviour
             {
                 // Move the first body location into head location but with lerp 
                 listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
-                    transform.position, bodyFollowDistance);
+                    transform.position, bodyFollowDistance * Time.deltaTime);
                 // Turn rotation of Z Axis (green Axis) the second body like the first body 
                 listBodyParts[i].transform.up = listBodyParts[i].transform.position - transform.position;
             }
@@ -98,6 +111,88 @@ public class Snakehead : MonoBehaviour
 
         // Make head rotation to
         transform.rotation = Quaternion.Lerp(transform.rotation, snakeDir, snakeRotationSensivity * Time.deltaTime);
+
+        for (int i = 0; i < listBodyParts.Count; i++)
+        {
+            // this is movement script for the second and more body
+            if (i != 0)
+            {
+                // Move the second body location into first body location but with lerp 
+                listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
+                    listBodyParts[i - 1].transform.position, bodyFollowDistance * Time.deltaTime);
+                // Turn rotation of Z Axis (green Axis) the second body like the first body  
+                listBodyParts[i].transform.up = listBodyParts[i].transform.position - listBodyParts[i - 1].transform.position;
+            }
+            // this is movement script for the first body
+            else
+            {
+                // Move the first body location into head location but with lerp 
+                listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
+                    transform.position, bodyFollowDistance * Time.deltaTime);
+                // Turn rotation of Z Axis (green Axis) the second body like the first body 
+                listBodyParts[i].transform.up = listBodyParts[i].transform.position - transform.position;
+            }
+        }
+    }
+
+    private void HandleInteractions()
+    {
+        // Get Vector2 from GameInput Class
+        Vector2 snakeVector2 = gameInput.GetMovementVector2Normalized();
+
+        // Asign the vector from var snakeVector2 into snakeMoveDirection
+        Vector3 snakeMoveDir = new Vector3(snakeVector2.x, snakeVector2.y, 0);
+
+        float interactDistance = 0.3f;
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, interactDistance);
+
+        foreach (var hitCollider in hitColliders)
+        {
+            
+
+            if (hitCollider.TryGetComponent(out SnakeBody snakeBody))
+            {
+                if (snakehead.headNumberIdentifier == snakeBody.bodyNumberIdentifier)
+                {
+                    Debug.Log("Ya ini body ku");
+                }
+                else
+                {
+                    isSnakeMoving = false;
+                    Debug.Log("Ini bukan body ku");
+                    Destroy(snakehead.gameObject);
+                    foreach (SnakeBody bodySnake in listBodyParts)
+                    {
+                        Destroy(bodySnake.gameObject);
+                    }
+                }
+            }
+        }
+
+        /*RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, snakeMoveDir, interactDistance);
+
+        if (raycastHit.collider != null)
+        {
+            if (raycastHit.transform.TryGetComponent(out SnakeBody snakeBody))
+            {
+                if (this.snakehead.headNumberIdentifier == snakeBody.bodyNumberIdentifier)
+                {
+                    Debug.Log("Ya ini body ku");
+                }
+                else
+                {
+                    Debug.Log("Ini bukan body ku");
+                    Destroy(this.snakehead.gameObject);
+                    foreach (SnakeBody bodySnake in listBodyParts)
+                    {
+                        Destroy(bodySnake.gameObject);
+                    }
+                    
+                }
+            }
+        }*/
+
     }
 
     private void AddBodyParts()

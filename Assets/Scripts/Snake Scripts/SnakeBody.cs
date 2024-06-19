@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class SnakeBody : MonoBehaviour
 {
-    
-    
+
+    public int bodyNumberIdentifier;
+    private int bodyNumberInList;
    
     // Start is called before the first frame update
     private void Start()
