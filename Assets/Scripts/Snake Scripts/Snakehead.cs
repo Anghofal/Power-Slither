@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Snakehead : MonoBehaviour
@@ -9,105 +10,102 @@ public class Snakehead : MonoBehaviour
     [SerializeField] private GameInput gameInput;
     [SerializeField] private float snakeMovSpeed;
     [SerializeField] private float snakeRotationSensivity;
-    private Vector3 snakeLastMoveDir = new Vector3(0,1,0);
+    private Vector3 snakeLastMoveDir;
 
-    private bool isSnakeMoving =  true;
+    // var for smoothing movement
+    [SerializeField] private float inputSmoothingFactor;
+    private Vector2 smoothedInputVector2 = Vector2.up;
+    [SerializeField] private float minimumMovementThreshold;
 
     // var for body movement
     [SerializeField] private GameObject snakeBodyPrefab;
     private List<SnakeBody> listBodyParts = new List<SnakeBody>();
     [SerializeField] private float bodyFollowDistance;
 
-    // Var for eating
-    [SerializeField] private float foodSpawnTime;
-    [SerializeField] private GameObject foodPrefabs;
-    private List<Apple> listApples = new List<Apple>();
-
     // Var for body collision
     [SerializeField] private int headNumberIdentifier = 0;
-    [SerializeField] private Snakehead snakehead;
+
+    // var for border detection
+    private bool isCollidingWithBorder = false;
+    /*private Vector3 borderCenter = new Vector3(0, 0, 0);
+    [SerializeField] private float borderRadius;*/
+
+    
 
     private void Awake()
     {
-        
+
     }
 
     // Start is called before the first frame update
     private void Start()
     {
+        snakeLastMoveDir = new Vector3(0, 2, 0);
         
     }
 
     // Update is called once per frame
     private void Update()
     {
-        
-        if (isSnakeMoving)
-        {
-            HeadMovement();
-        }
+        HeadMovement();
         HandleInteractions();
-
-        //BodyMovement();
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
             AddBodyParts();
         }
 
-        StartCoroutine("SpawnFood");
         
-    }
-    
-    private void BodyMovement()
-    {
-        for (int i = 0; i < listBodyParts.Count; i++)
-        {
-            // this is movement script for the second and more body
-            if (i != 0)
-            {
-                // Move the second body location into first body location but with lerp 
-                listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
-                    listBodyParts[i - 1].transform.position, bodyFollowDistance * Time.deltaTime);
-                // Turn rotation of Z Axis (green Axis) the second body like the first body  
-                listBodyParts[i].transform.up = listBodyParts[i].transform.position - listBodyParts[i - 1].transform.position;
-            }
-            // this is movement script for the first body
-            else
-            {
-                // Move the first body location into head location but with lerp 
-                listBodyParts[i].transform.position = Vector3.Lerp(listBodyParts[i].transform.position,
-                    transform.position, bodyFollowDistance * Time.deltaTime);
-                // Turn rotation of Z Axis (green Axis) the second body like the first body 
-                listBodyParts[i].transform.up = listBodyParts[i].transform.position - transform.position;
-            }
-        }
+
     }
 
     private void HeadMovement()
     {
         // Get Vector2 from GameInput Class
         Vector2 snakeVector2 = gameInput.GetMovementVector2Normalized();
-        
-        // Asign the vector from var snakeVector2 into snakeMoveDirection
-        Vector3 snakeMoveDir = new Vector3(snakeVector2.x, snakeVector2.y, 0);
 
         // Make new var Distance later we will multiply with snakeMoveDir
         // and to know how far snake will go over seconds using movement speed parameter
         float snakeMoveDistance = snakeMovSpeed * Time.deltaTime;
 
-        // If player is not input anything snake will still walk
-        // using last input player
-        if (snakeMoveDir != Vector3.zero)
+        if (isCollidingWithBorder)
         {
-            snakeLastMoveDir = snakeMoveDir;
+            if (transform.position.x <= 0 && transform.position.y <= 0)
+            {
+                snakeVector2 = new Vector2(1, 1).normalized;
+
+            }
+            else if (transform.position.x <= 0 && transform.position.y >= 0)
+            {
+                snakeVector2 = new Vector3(1, -1).normalized;
+            }
+            else if (transform.position.x >= 0 && transform.position.y <= 0)
+            {
+                snakeVector2 = new Vector3(-1, 1).normalized;
+            }
+            else
+            {
+                snakeVector2 = new Vector3(-1, -1).normalized;
+            }
+
+            SmoothHeadMovement(snakeVector2, snakeMoveDistance);
+
+            // Move position head based on move direction (input) and distance (speed) 
+            transform.position += snakeLastMoveDir * snakeMoveDistance;
+        }
+        else
+        {
+            if (snakeVector2 != Vector2.zero)
+            {
+                SmoothHeadMovement(snakeVector2, snakeMoveDistance);
+            }
+
+            // Move position head based on move direction (input) and distance (speed) 
+            transform.position += snakeLastMoveDir * snakeMoveDistance;
         }
 
         // Making rotation based on move direction
         Quaternion snakeDir = Quaternion.LookRotation(Vector3.forward, snakeLastMoveDir);
-
-        // Move position head based on move direction (input) and distance (speed) 
-        transform.position += snakeLastMoveDir * snakeMoveDistance;
 
         // Make head rotation to
         transform.rotation = Quaternion.Lerp(transform.rotation, snakeDir, snakeRotationSensivity * Time.deltaTime);
@@ -135,13 +133,23 @@ public class Snakehead : MonoBehaviour
         }
     }
 
+    private void SmoothHeadMovement(Vector2 snakeVector2, float snakeMoveDistance)
+    {
+        // Apply low-pass filter to smooth the input
+        smoothedInputVector2 = Vector2.Lerp(smoothedInputVector2, snakeVector2, inputSmoothingFactor * Time.deltaTime);
+
+        // If there is significant input, update the move direction
+        if (smoothedInputVector2.magnitude < minimumMovementThreshold)
+        {
+            smoothedInputVector2 = smoothedInputVector2.normalized * minimumMovementThreshold;
+        }
+
+        // Update the last move direction to ensure continuous movement
+        snakeLastMoveDir = new Vector3(smoothedInputVector2.x, smoothedInputVector2.y, 0);
+    }
+
     private void HandleInteractions()
     {
-        // Get Vector2 from GameInput Class
-        Vector2 snakeVector2 = gameInput.GetMovementVector2Normalized();
-
-        // Asign the vector from var snakeVector2 into snakeMoveDirection
-        Vector3 snakeMoveDir = new Vector3(snakeVector2.x, snakeVector2.y, 0);
 
         float interactDistance = 0.3f;
 
@@ -149,19 +157,15 @@ public class Snakehead : MonoBehaviour
 
         foreach (var hitCollider in hitColliders)
         {
-            
-
             if (hitCollider.TryGetComponent(out SnakeBody snakeBody))
             {
-                if (snakehead.headNumberIdentifier == snakeBody.bodyNumberIdentifier)
+                if (this.headNumberIdentifier == snakeBody.bodyNumberIdentifier)
                 {
-                    Debug.Log("Ya ini body ku");
                 }
                 else
                 {
-                    isSnakeMoving = false;
                     Debug.Log("Ini bukan body ku");
-                    Destroy(snakehead.gameObject);
+                    Destroy(this.gameObject);
                     foreach (SnakeBody bodySnake in listBodyParts)
                     {
                         Destroy(bodySnake.gameObject);
@@ -170,7 +174,14 @@ public class Snakehead : MonoBehaviour
             }
         }
 
-        /*RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, snakeMoveDir, interactDistance);
+        /*
+        // Get Vector2 from GameInput Class
+        Vector2 snakeVector2 = gameInput.GetMovementVector2Normalized();
+
+        // Asign the vector from var snakeVector2 into snakeMoveDirection
+        Vector3 snakeMoveDir = new Vector3(snakeVector2.x, snakeVector2.y, 0); 
+
+        RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, snakeMoveDir, interactDistance);
 
         if (raycastHit.collider != null)
         {
@@ -227,25 +238,53 @@ public class Snakehead : MonoBehaviour
         }
     }
 
-    private IEnumerator SpawnFood()
+    void OnTriggerEnter2D(Collider2D col)
     {
-        yield return new WaitForSeconds(foodSpawnTime);
         
-        Vector2 RandomPos = new Vector2(UnityEngine.Random.Range(transform.position.x - 8, transform.position.x + 8), UnityEngine.Random.Range(transform.position.y - 8, transform.position.y + 8));
-
-        GameObject appleFood = Instantiate(foodPrefabs, RandomPos, Quaternion.identity);
-        
-
-        StopCoroutine("SpawnFood");
-    }
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        Apple applePrefabs = col.gameObject.GetComponent<Apple>();
-        if (applePrefabs != null)
+        if (col.GetComponent<Apple>() != null)
         {
+            Debug.Log(CircularBorder.listApples.Count);
+            // Existing logic for eating food
+            CircularBorder.listApples.Remove(col.GetComponent<Apple>());
             Destroy(col.gameObject);
+            Debug.Log("An apple is destroyed");
+            Debug.Log(CircularBorder.listApples.Count);
             AddBodyParts();
         }
+        else if (col.gameObject.tag == "InvisibleWall")
+        {
+            isCollidingWithBorder = true;
+        }
     }
+
+    void OnTriggerStay2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "InvisibleWall")
+        {
+            isCollidingWithBorder = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "InvisibleWall")
+        {
+            isCollidingWithBorder = false;
+        }
+    }
+
+    /*void ConstrainWithinBorder()
+    {
+        Vector3 snakePosition = transform.position;
+        Vector3 centerToSnake = snakePosition - borderCenter;
+        float distanceFromCenter = centerToSnake.magnitude;
+
+        if (distanceFromCenter > borderRadius)
+        {
+            Vector3 directionToCenter = centerToSnake.normalized;
+            Vector3 newPosition = borderCenter + directionToCenter * borderRadius;
+            transform.position = newPosition;
+        }
+    }*/
+
 }
