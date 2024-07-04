@@ -9,11 +9,14 @@ public class CameraCenter : MonoBehaviour
     [SerializeField] private float cameraSmoothSpeed;
     [SerializeField] private Transform snakeHead;
     private Vector3 cameraVelocity;
-
+    public bool EnableCamera;
     private void FixedUpdate()
     {
-        transform.position = Vector3.SmoothDamp(transform.position, new Vector3(
-            snakeHead.position.x, snakeHead.position.y, transform.position.z), ref cameraVelocity,
-            cameraSmoothSpeed);
+        if (EnableCamera)
+        {
+            transform.position = Vector3.SmoothDamp(transform.position, new Vector3(
+                snakeHead.position.x, snakeHead.position.y, transform.position.z), ref cameraVelocity,
+                cameraSmoothSpeed);
+        }
     }
 }

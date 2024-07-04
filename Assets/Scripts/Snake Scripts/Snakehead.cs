@@ -1,16 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class Snakehead : MonoBehaviour
+public class SnakeHead : MonoBehaviour
 {
     // var for movement head
     [SerializeField] private GameInput gameInput;
     [SerializeField] private float snakeMovSpeed;
     [SerializeField] private float snakeRotationSensivity;
-    private Vector3 snakeLastMoveDir;
+    private Vector3 snakeLastMoveDir = new Vector3(0, 2, 0);
 
     // var for smoothing movement
     [SerializeField] private float inputSmoothingFactor;
@@ -19,28 +18,30 @@ public class Snakehead : MonoBehaviour
 
     // var for body movement
     [SerializeField] private GameObject snakeBodyPrefab;
-    private List<SnakeBody> listBodyParts = new List<SnakeBody>();
+    public List<SnakeBody> listBodyParts = new List<SnakeBody>();
     [SerializeField] private float bodyFollowDistance;
 
-    // Var for body collision
-    [SerializeField] private int headNumberIdentifier = 0;
+    // var for body collision
+    public int headNumberIdentifier = 0;
 
     // var for border detection
-    private bool isCollidingWithBorder = false;
-    /*private Vector3 borderCenter = new Vector3(0, 0, 0);
-    [SerializeField] private float borderRadius;*/
+    public static bool isSnakeCollidingWithBorder = false;
 
-    
+    [SerializeField] private CameraCenter cameraCenter;
 
     private void Awake()
     {
-
+        
     }
 
     // Start is called before the first frame update
     private void Start()
     {
-        snakeLastMoveDir = new Vector3(0, 2, 0);
+
+        
+        AddBodyParts();
+        AddBodyParts();
+        AddBodyParts();
         
     }
 
@@ -48,16 +49,39 @@ public class Snakehead : MonoBehaviour
     private void Update()
     {
         HeadMovement();
-        HandleInteractions();
+        //HandleInteractions();
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
             AddBodyParts();
         }
-
-        
-
     }
+
+    private Vector2 whenSnakeIsCollisionBorder()
+    {
+        Vector2 snakeVector2 = Vector2.zero;
+
+        if (transform.position.x <= 0 && transform.position.y <= 0)
+        {
+            snakeVector2 = new Vector2(1, 1).normalized;
+
+        }
+        else if (transform.position.x <= 0 && transform.position.y >= 0)
+        {
+            snakeVector2 = new Vector3(1, -1).normalized;
+        }
+        else if (transform.position.x >= 0 && transform.position.y <= 0)
+        {
+            snakeVector2 = new Vector3(-1, 1).normalized;
+        }
+        else
+        {
+            snakeVector2 = new Vector3(-1, -1).normalized;
+        }
+        return snakeVector2;
+    }
+
+    
 
     private void HeadMovement()
     {
@@ -68,7 +92,7 @@ public class Snakehead : MonoBehaviour
         // and to know how far snake will go over seconds using movement speed parameter
         float snakeMoveDistance = snakeMovSpeed * Time.deltaTime;
 
-        if (isCollidingWithBorder)
+        if (isSnakeCollidingWithBorder)
         {
             if (transform.position.x <= 0 && transform.position.y <= 0)
             {
@@ -88,7 +112,7 @@ public class Snakehead : MonoBehaviour
                 snakeVector2 = new Vector3(-1, -1).normalized;
             }
 
-            SmoothHeadMovement(snakeVector2, snakeMoveDistance);
+            SmoothHeadMovement(snakeVector2);
 
             // Move position head based on move direction (input) and distance (speed) 
             transform.position += snakeLastMoveDir * snakeMoveDistance;
@@ -97,7 +121,7 @@ public class Snakehead : MonoBehaviour
         {
             if (snakeVector2 != Vector2.zero)
             {
-                SmoothHeadMovement(snakeVector2, snakeMoveDistance);
+                SmoothHeadMovement(snakeVector2);
             }
 
             // Move position head based on move direction (input) and distance (speed) 
@@ -133,7 +157,7 @@ public class Snakehead : MonoBehaviour
         }
     }
 
-    private void SmoothHeadMovement(Vector2 snakeVector2, float snakeMoveDistance)
+    private void SmoothHeadMovement(Vector2 snakeVector2)
     {
         // Apply low-pass filter to smooth the input
         smoothedInputVector2 = Vector2.Lerp(smoothedInputVector2, snakeVector2, inputSmoothingFactor * Time.deltaTime);
@@ -159,8 +183,9 @@ public class Snakehead : MonoBehaviour
         {
             if (hitCollider.TryGetComponent(out SnakeBody snakeBody))
             {
-                if (this.headNumberIdentifier == snakeBody.bodyNumberIdentifier)
+                if (headNumberIdentifier == snakeBody.bodyNumberIdentifier)
                 {
+
                 }
                 else
                 {
@@ -206,7 +231,7 @@ public class Snakehead : MonoBehaviour
 
     }
 
-    private void AddBodyParts()
+    public void AddBodyParts()
     {
         // If there is something on List listBodyParts 
         if (listBodyParts.Count != 0)
@@ -216,6 +241,9 @@ public class Snakehead : MonoBehaviour
                 listBodyParts[listBodyParts.Count - 1].transform.position,
                 listBodyParts[listBodyParts.Count - 1].transform.rotation);
             snakeBodySpawn.transform.localScale = transform.localScale;
+
+            snakeBodySpawn.GetComponent<SnakeBody>().bodyNumberIdentifier = headNumberIdentifier;
+
             // Make sure the earliest sprite(body) spawn layer is behind the old ones
             snakeBodySpawn.GetComponentInChildren<SpriteRenderer>().sortingOrder = (0 - 1 - listBodyParts.Count);
 
@@ -230,6 +258,9 @@ public class Snakehead : MonoBehaviour
                 transform.position,
                 transform.rotation);
             snakeBodySpawn.transform.localScale = transform.localScale;
+
+            snakeBodySpawn.GetComponent<SnakeBody>().bodyNumberIdentifier = this.headNumberIdentifier;
+
             // Make sure the earliest sprite(body) spawn layer is behind the head
             snakeBodySpawn.GetComponentInChildren<SpriteRenderer>().sortingOrder = (0 - 1 - listBodyParts.Count);
 
@@ -243,48 +274,78 @@ public class Snakehead : MonoBehaviour
         
         if (col.GetComponent<Apple>() != null)
         {
-            Debug.Log(CircularBorder.listApples.Count);
             // Existing logic for eating food
             CircularBorder.listApples.Remove(col.GetComponent<Apple>());
             Destroy(col.gameObject);
-            Debug.Log("An apple is destroyed");
-            Debug.Log(CircularBorder.listApples.Count);
-            AddBodyParts();
+
+            if (listBodyParts.Count <= 15)
+            {
+                AddBodyParts();
+            }
         }
-        else if (col.gameObject.tag == "InvisibleWall")
+        else if (col.GetComponent<InvisibleBox>() != null)
         {
-            isCollidingWithBorder = true;
+            
+
+            isSnakeCollidingWithBorder = true;
+        }
+        /*else if (col.GetComponent<SnakeMoveAgent>() !=  null)
+        {
+            if (col.GetComponent<SnakeMoveAgent>().headNumberIdentifier != headNumberIdentifier)
+            {
+                Destroy(col.gameObject);
+                foreach (var snakeBodyParts in col.gameObject.GetComponent<SnakeMoveAgent>().listBodyParts)
+                {
+                    Destroy(snakeBodyParts.gameObject);
+                }
+                
+
+            }
+        }*/
+        else if (col.GetComponent<SnakeBody>() != null)
+        {
+            if (col.GetComponent<SnakeBody>().bodyNumberIdentifier != headNumberIdentifier)
+            {
+                
+                foreach (var snakeBodyParts in listBodyParts)
+                {
+                    Destroy(snakeBodyParts.gameObject);
+                }
+                Destroy(this.gameObject);
+
+
+            }
         }
     }
 
     void OnTriggerStay2D(Collider2D col)
     {
-        if (col.gameObject.tag == "InvisibleWall")
+        if (col.GetComponent<InvisibleBox>() != null)
         {
-            isCollidingWithBorder = true;
+            
+            isSnakeCollidingWithBorder = true;
         }
     }
 
     void OnTriggerExit2D(Collider2D col)
     {
-        if (col.gameObject.tag == "InvisibleWall")
+        if (col.GetComponent<InvisibleBox>() != null)
         {
-            isCollidingWithBorder = false;
+            
+
+            float snakeMoveDistance = snakeMovSpeed * Time.deltaTime;
+            Vector2 snakeVector2 = whenSnakeIsCollisionBorder();
+
+            SmoothHeadMovement(snakeVector2);
+
+            transform.position += snakeLastMoveDir * snakeMoveDistance;
+
+            isSnakeCollidingWithBorder = false;
         }
     }
 
-    /*void ConstrainWithinBorder()
+    private void OnDestroy()
     {
-        Vector3 snakePosition = transform.position;
-        Vector3 centerToSnake = snakePosition - borderCenter;
-        float distanceFromCenter = centerToSnake.magnitude;
-
-        if (distanceFromCenter > borderRadius)
-        {
-            Vector3 directionToCenter = centerToSnake.normalized;
-            Vector3 newPosition = borderCenter + directionToCenter * borderRadius;
-            transform.position = newPosition;
-        }
-    }*/
-
+        cameraCenter.EnableCamera = false;
+    }
 }
