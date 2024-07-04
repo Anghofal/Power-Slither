@@ -1,5 +1,7 @@
 # Power Slither
 - Image App
+![Screenshot 2024-07-04 220919](https://github.com/Anghofal/Power-Slither/assets/90444428/78a81d69-8e09-4594-8006-e4da43ac2557)
+
 - A little content of App Description
 
 # Background Power Slither
