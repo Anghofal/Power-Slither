@@ -3,16 +3,6 @@
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 /[Ll]ibrary/
-# Exclude all files under ml-agents
-/[Pp]ackages/mlagents/ml-agents/
-
-# Include only the necessary directories
-!/[Pp]ackages/mlagents/ml-agents/com.unity.ml-agents/
-!/[Pp]ackages/mlagents/ml-agents/com.unity.ml-agents/extensions/
-
-# Ensure parent directories are included
-!/[Pp]ackages/mlagents/
-!/[Pp]ackages/mlagents/ml-agents/
 /venv/
 /[Tt]emp/
 /[Oo]bj/
