@@ -4,7 +4,7 @@
 #
 /[Ll]ibrary/
 # Exclude all files under ml-agents
-/[Pp]ackages/mlagents/ml-agents/**
+/[Pp]ackages/mlagents/ml-agents/
 
 # Include only the necessary directories
 !/[Pp]ackages/mlagents/ml-agents/com.unity.ml-agents/
