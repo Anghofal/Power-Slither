@@ -94,9 +94,20 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.barracuda": {
+      "version": "3.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.6.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.burst": {
       "version": "1.8.13",
-      "depth": 3,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
@@ -161,12 +172,40 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.inputsystem": {
+      "version": "1.7.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.mathematics": {
       "version": "1.2.6",
       "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
+    },
+    "com.unity.ml-agents": {
+      "version": "file:./mlagents/ml-agents/com.unity.ml-agents",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.barracuda": "3.0.0",
+        "com.unity.modules.imageconversion": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      }
+    },
+    "com.unity.ml-agents.extensions": {
+      "version": "file:./mlagents/ml-agents/com.unity.ml-agents.extensions",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.ml-agents": "2.3.0-exp.3",
+        "com.unity.modules.physics": "1.0.0"
+      }
     },
     "com.unity.test-framework": {
       "version": "1.1.33",

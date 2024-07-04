@@ -3,16 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - InvisibleWall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Snake
   - Water
   - UI
-  - 
-  - 
+  - WorldBorder
+  - Food
   - 
   - 
   - 

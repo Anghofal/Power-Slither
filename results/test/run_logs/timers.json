@@ -1,0 +1,49 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1719983020",
+        "python_version": "3.9.16 (main, May 17 2023, 17:49:16) [MSC v.1916 64 bit (AMD64)]",
+        "command_line_arguments": "D:\\conda\\envs\\mlagents-venv\\Scripts\\mlagents-learn config/config.yaml --resume --run-id=test",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.3.0",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1719983039"
+    },
+    "total": 18.7054967,
+    "count": 1,
+    "self": 0.00648580000000365,
+    "children": {
+        "run_training.setup": {
+            "total": 0.05209869999999994,
+            "count": 1,
+            "self": 0.05209869999999994
+        },
+        "TrainerController.start_learning": {
+            "total": 18.6469122,
+            "count": 1,
+            "self": 6.049999999646616e-05,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 18.520296700000003,
+                    "count": 1,
+                    "self": 18.520296700000003
+                },
+                "TrainerController._save_models": {
+                    "total": 0.12655499999999975,
+                    "count": 1,
+                    "self": 0.01595620000000153,
+                    "children": {
+                        "RLTrainer._checkpoint": {
+                            "total": 0.11059879999999822,
+                            "count": 1,
+                            "self": 0.11059879999999822
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

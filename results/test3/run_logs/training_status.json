@@ -1,0 +1,29 @@
+{
+    "MoveAgentToApple": {
+        "checkpoints": [
+            {
+                "steps": 300043,
+                "file_path": "results\\test3\\MoveAgentToApple\\MoveAgentToApple-300043.onnx",
+                "reward": -2.340909090909091,
+                "creation_time": 1719990749.2100208,
+                "auxillary_file_paths": [
+                    "results\\test3\\MoveAgentToApple\\MoveAgentToApple-300043.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 300043,
+            "file_path": "results\\test3\\MoveAgentToApple.onnx",
+            "reward": -2.340909090909091,
+            "creation_time": 1719990749.2100208,
+            "auxillary_file_paths": [
+                "results\\test3\\MoveAgentToApple\\MoveAgentToApple-300043.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.3.0"
+    }
+}
