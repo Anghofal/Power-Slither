@@ -3,6 +3,9 @@
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
 /[Ll]ibrary/
+/[Pp]ackages/mlagents/ml-agents/
+!/[Pp]ackages/mlagents/ml-agents/com.unity.ml-agents/
+!/[Pp]ackages/mlagents/ml-agents/com.unity.ml-agents/
 /venv/
 /[Tt]emp/
 /[Oo]bj/
